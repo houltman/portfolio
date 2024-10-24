@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en" data-theme="lofi"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v4.16.7"><!-- Primary Meta Tags --><title>Patrón Redux en Angular</title><meta name="title" content="Patrón Redux en Angular"><meta name="description" content="Explora cómo implementar el patrón Redux en aplicaciones Angular para un manejo eficiente del estado."><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="http://localhost:4321/portfolio/blog/patrn-redux-en-angular/"><meta property="og:title" content="Patrón Redux en Angular"><meta property="og:description" content="Explora cómo implementar el patrón Redux en aplicaciones Angular para un manejo eficiente del estado."><meta property="og:image" content="http://localhost:4321/post_img.webp"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="http://localhost:4321/portfolio/blog/patrn-redux-en-angular/"><meta property="twitter:title" content="Patrón Redux en Angular"><meta property="twitter:description" content="Explora cómo implementar el patrón Redux en aplicaciones Angular para un manejo eficiente del estado."><meta property="twitter:image" content="http://localhost:4321/post_img.webp"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><link rel="stylesheet" href="/portfolio/_astro/_page_.DNp89qR4.css">
+<style>.time-line-container>div:last-child .education__time>.education__line{display:none}.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}
+</style><script type="module" src="/portfolio/_astro/hoisted.2daoxv0f.js"></script></head> <body> <div class="bg-base-100 drawer lg:drawer-open"> <input id="my-drawer" type="checkbox" class="drawer-toggle"> <div class="drawer-content bg-base-100"> <div class="sticky lg:hidden top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 bg-base-100 text-base-content shadow-sm"> <div class="navbar"> <div class="navbar-start"> <label for="my-drawer" class="btn btn-square btn-ghost"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </label> </div> <div class="navbar-center"> <a class="btn btn-ghost normal-case text-xl" href="/">Gabriel Houltman ⚡️</a> </div> <div class="navbar-end"></div> </div> </div> <div class="md:flex md:justify-center"> <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">  <main class="md:flex md:justify-center"> <article class="prose prose-lg max-w-[750px] prose-img:mx-auto"> <img src="/post_img.webp" alt="Patrón Redux en Angular" class="w-full mb-6" width="750" height="422" loading="lazy" decoding="async"> <h1 class="title my-2 text-4xl font-bold">Patrón Redux en Angular</h1> <time>Oct 23, 2024</time> <br>  <a href="/blog/tag/angular" class="badge badge-outline ml-2 no-underline"> angular </a><a href="/blog/tag/redux" class="badge badge-outline ml-2 no-underline"> redux </a><a href="/blog/tag/estado" class="badge badge-outline ml-2 no-underline"> estado </a>  <div class="divider my-2"></div>  <p>El patrón Redux es una arquitectura de gestión de estado que proporciona una forma predecible de manejar el estado en aplicaciones JavaScript. Aunque es más conocido por su uso con React, también se puede implementar eficazmente en aplicaciones Angular. A continuación, exploraremos cómo aplicar Redux en Angular.</p>
+<h3 id="qué-es-redux">¿Qué es Redux?</h3>
+<p>Redux es una biblioteca que permite gestionar el estado de una aplicación en un único lugar (store). Se basa en tres principios fundamentales:</p>
+<ol>
+<li><strong>Un único store</strong>: Todo el estado de la aplicación se almacena en un solo objeto.</li>
+<li><strong>El estado es solo de lectura</strong>: Para cambiar el estado, debes despachar acciones.</li>
+<li><strong>Las acciones son solo descripciones</strong>: Las acciones son objetos que describen lo que sucedió, no cómo cambió el estado.</li>
+</ol>
+<h3 id="integración-de-redux-en-angular">Integración de Redux en Angular</h3>
+<p>Para implementar Redux en Angular, se utiliza la biblioteca <strong>@ngrx/store</strong>, que es una implementación de Redux para Angular. Aquí te mostramos los pasos básicos para configurarlo:</p>
+<h4 id="1-instalar-ngrx">1. Instalar NgRx</h4>
+<p>Primero, necesitas instalar NgRx en tu proyecto Angular. Puedes hacerlo usando npm:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">ng</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @ngrx/store</span></span>
+<span class="line"></span></code></pre>
+<h4 id="2-definir-el-estado">2. Definir el Estado</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">//</span><span style="color:#9ECBFF"> counter.state.ts</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> interface CounterState {</span></span>
+<span class="line"><span style="color:#B392F0">    count:</span><span style="color:#9ECBFF"> number</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> const initialCounterState: CounterState = {</span></span>
+<span class="line"><span style="color:#B392F0">    count:</span><span style="color:#9ECBFF"> 0,</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span></code></pre>
+<h4 id="3-crear-acciones">3. Crear Acciones</h4>
+<p>Las acciones son objetos que describen un cambio en el estado. Define tus acciones en un archivo:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">//</span><span style="color:#9ECBFF"> counter.actions.ts</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> createAction</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> '@ngrx/store'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> const increment = createAction(</span><span style="color:#B392F0">'[Counter] Increment'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> const decrement = createAction(</span><span style="color:#B392F0">'[Counter] Decrement'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"></span></code></pre>
+<h4 id="4-crear-reducers">4. Crear Reducers</h4>
+<p>Los reducers son funciones puras que reciben el estado actual y una acción, y devuelven un nuevo estado:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">//</span><span style="color:#9ECBFF"> counter.reducer.ts</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> createReducer,</span><span style="color:#9ECBFF"> on</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> '@ngrx/store'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> increment,</span><span style="color:#9ECBFF"> decrement</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> './counter.actions'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> initialCounterState,</span><span style="color:#9ECBFF"> CounterState</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> './counter.state'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> const counterReducer = createReducer(</span></span>
+<span class="line"><span style="color:#B392F0">    initialCounterState,</span></span>
+<span class="line"><span style="color:#B392F0">    on(increment,</span><span style="color:#E1E4E8"> (state) =</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> ({ count: state.count + 1 })),</span></span>
+<span class="line"><span style="color:#B392F0">    on(decrement,</span><span style="color:#E1E4E8"> (state) =</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> ({ count: state.count - 1 }))</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h4 id="5-configurar-el-store-en-el-módulo">5. Configurar el Store en el Módulo</h4>
+<p>Importa el store en tu módulo principal:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">//</span><span style="color:#9ECBFF"> app.module.ts</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> StoreModule</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> '@ngrx/store'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> counterReducer</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> './counter.reducer'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@NgModule(</span><span style="color:#9ECBFF">{</span></span>
+<span class="line"><span style="color:#B392F0">    imports:</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#B392F0">        StoreModule.forRoot(</span><span style="color:#9ECBFF">{</span><span style="color:#9ECBFF"> counter:</span><span style="color:#9ECBFF"> counterReducer</span><span style="color:#9ECBFF"> }</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> class AppModule {}</span></span>
+<span class="line"></span>
+<span class="line"></span></code></pre>
+<h4 id="6-usar-el-store-en-componentes">6. Usar el Store en Componentes</h4>
+<p>Puedes inyectar el store en tus componentes y seleccionar el estado o despachar acciones:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">//</span><span style="color:#9ECBFF"> counter.component.ts</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> Component</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> '@angular/core'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> Store</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> '@ngrx/store'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> increment,</span><span style="color:#9ECBFF"> decrement</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> './counter.actions'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> Observable</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> 'rxjs'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#B392F0">import</span><span style="color:#9ECBFF"> {</span><span style="color:#9ECBFF"> CounterState</span><span style="color:#9ECBFF"> }</span><span style="color:#9ECBFF"> from</span><span style="color:#9ECBFF"> './counter.state'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@Component(</span><span style="color:#9ECBFF">{</span></span>
+<span class="line"><span style="color:#B392F0">    selector:</span><span style="color:#9ECBFF"> 'app-counter',</span></span>
+<span class="line"><span style="color:#B392F0">    template:</span><span style="color:#9ECBFF"> `</span></span>
+<span class="line"><span style="color:#F97583">        &#x3C;</span><span style="color:#B392F0">h1</span><span style="color:#9ECBFF">>Count: {{ count$ </span><span style="color:#F97583">|</span><span style="color:#B392F0"> async</span><span style="color:#9ECBFF"> }}</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">/h</span><span style="color:#F97583">1></span></span>
+<span class="line"><span style="color:#F97583">        &#x3C;</span><span style="color:#B392F0">button</span><span style="color:#9ECBFF"> (click)="increment()"</span><span style="color:#F97583">></span><span style="color:#9ECBFF">Increment</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">/button</span><span style="color:#F97583">></span></span>
+<span class="line"><span style="color:#F97583">        &#x3C;</span><span style="color:#B392F0">button</span><span style="color:#9ECBFF"> (click)="decrement()"</span><span style="color:#F97583">></span><span style="color:#9ECBFF">Decrement</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">/button</span><span style="color:#F97583">></span></span>
+<span class="line"><span style="color:#9ECBFF">    `</span><span style="color:#B392F0">,</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#E1E4E8"> class CounterComponent {</span></span>
+<span class="line"><span style="color:#B392F0">    count$:</span><span style="color:#9ECBFF"> Observable</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">numbe</span><span style="color:#E1E4E8">r</span><span style="color:#F97583">></span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    constructor(private</span><span style="color:#9ECBFF"> store:</span><span style="color:#9ECBFF"> Store</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">{</span><span style="color:#9ECBFF"> counter:</span><span style="color:#9ECBFF"> CounterState</span><span style="color:#E1E4E8"> }</span><span style="color:#F97583">></span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">        this.count$</span><span style="color:#9ECBFF"> =</span><span style="color:#9ECBFF"> store.select</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">'counter'</span><span style="color:#B392F0">,</span><span style="color:#9ECBFF"> 'count'</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    increment</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">        this.store.dispatch(increment(</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">    decrement</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#B392F0">        this.store.dispatch(decrement(</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h4 id="conclusión">Conclusión</h4>
+<p>Integrar el patrón Redux en Angular a través de NgRx proporciona una forma poderosa de gestionar el estado de tu aplicación. Este enfoque no solo facilita el seguimiento del estado, sino que también mejora la mantenibilidad y escalabilidad del código. Al aplicar estos conceptos, estarás mejor equipado para manejar aplicaciones Angular más complejas y con un flujo de datos más predecible.</p>  </article> </main>  </main> </div> <footer class="footer footer-center block mb-5 pt-10"> <div class="pb-2">
+&copy; 2024 Gabriel Houltman
+</div> <div class="inline opacity-0"> <a href="https://megasolucionesweb.com/" target="_blank" class="font-bold">Los mejores Servicios en Desarrollo web y Analista de Calidad</a> </div> </footer>  </div> <div class="drawer-side z-40"> <label for="my-drawer" class="drawer-overlay"></label> <aside class="px-2 pt-2 h-auto min-h-full w-[19rem] bg-base-200 text-base-content flex flex-col"> <div class="w-fit mx-auto mt-5 mb-6"> <a href="/"> <div class="avatar transition ease-in-out hover:scale-[102%] block m-auto"> <div class="w-[8.5rem]"> <img src="/profile.jpg" class="mask mask-circle" alt="Profile image" width="300" height="300" loading="lazy" decoding="async"> </div> </div> </a> </div> <ul class="menu grow shrink menu-md overflow-y-auto"> <li><a class="py-3 text-base" id="home" href="/">Home</a></li> <li><a class="py-3 text-base" id="projects" href="/projects">Projects</a></li> <li><a class="py-3 text-base" id="services" href="/services">Services</a></li> <li><a class="py-3 text-base" id="store" href="/store">Store</a></li> <li><a class="py-3 text-base" id="blog" href="/blog/">Blog</a></li> <li><a class="py-3 text-base" id="cv" href="/cv">CV</a></li> <li> <a class="py-3 text-base" href="mailto:houltman@gmail.com" target="_blank" referrerpolicy="no-referrer-when-downgrade">Contact</a> </li> </ul> <script>(function(){const sideBarActiveItemID = undefined;
+const activeClass = "bg-base-300";
+
+const activeItemElem = document.getElementById(sideBarActiveItemID);
+activeItemElem && activeItemElem.classList.add(activeClass);
+})();</script> <div class="block sticky pointer-events-none bottom-10 bg-base-200 justify-center h-12 [mask-image:linear-gradient(transparent,#000000)]"></div> <div class="social-icons px-4 pb-5 pt-1 flex self-center justify-center sticky bottom-0 bg-base-200"> <!--
+    <a
+        href="https://manuelernestog.github.io/support-my-work/"
+        target="_blank"
+        class="mx-3"
+        aria-label="Support my work"
+        title="Support my work"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: currentColor;transform: ;msFilter:;"
+            ><path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M5 2h2v3H5zm4 0h2v3H9zm4 0h2v3h-2zm6 7h-2V7H3v11c0 1.654 1.346 3 3 3h8c1.654 0 3-1.346 3-3h2c1.103 0 2-.897 2-2v-5c0-1.103-.897-2-2-2zm-4 9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9h10v9zm2-2v-5h2l.002 5H17z"
+            ></path></svg
+        >
+    </a>
+    --> <a href="https://github.com/houltman" target="_blank" class="mx-3" aria-label="Github" title="Github"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: currentColor;transform: ;msFilter:;"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.026 2c-5.509 0-9.974 4.465-9.974 9.974 0 4.406 2.857 8.145 6.821 9.465.499.09.679-.217.679-.481 0-.237-.008-.865-.011-1.696-2.775.602-3.361-1.338-3.361-1.338-.452-1.152-1.107-1.459-1.107-1.459-.905-.619.069-.605.069-.605 1.002.07 1.527 1.028 1.527 1.028.89 1.524 2.336 1.084 2.902.829.091-.645.351-1.085.635-1.334-2.214-.251-4.542-1.107-4.542-4.93 0-1.087.389-1.979 1.024-2.675-.101-.253-.446-1.268.099-2.64 0 0 .837-.269 2.742 1.021a9.582 9.582 0 0 1 2.496-.336 9.554 9.554 0 0 1 2.496.336c1.906-1.291 2.742-1.021 2.742-1.021.545 1.372.203 2.387.099 2.64.64.696 1.024 1.587 1.024 2.675 0 3.833-2.33 4.675-4.552 4.922.355.308.675.916.675 1.846 0 1.334-.012 2.41-.012 2.737 0 .267.178.577.687.479C19.146 20.115 22 16.379 22 11.974 22 6.465 17.535 2 12.026 2z"></path> </svg> </a> <!--
+    <a href="https://twitter.com/houltman" target="_blank" class="mx-3" aria-label="Twitter" title="Twitter">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: currentColor;transform: ;msFilter:;"
+            ><path
+                d="M19.633 7.997c.013.175.013.349.013.523 0 5.325-4.053 11.461-11.46 11.461-2.282 0-4.402-.661-6.186-1.809.324.037.636.05.973.05a8.07 8.07 0 0 0 5.001-1.721 4.036 4.036 0 0 1-3.767-2.793c.249.037.499.062.761.062.361 0 .724-.05 1.061-.137a4.027 4.027 0 0 1-3.23-3.953v-.05c.537.299 1.16.486 1.82.511a4.022 4.022 0 0 1-1.796-3.354c0-.748.199-1.434.548-2.032a11.457 11.457 0 0 0 8.306 4.215c-.062-.3-.1-.611-.1-.923a4.026 4.026 0 0 1 4.028-4.028c1.16 0 2.207.486 2.943 1.272a7.957 7.957 0 0 0 2.556-.973 4.02 4.02 0 0 1-1.771 2.22 8.073 8.073 0 0 0 2.319-.624 8.645 8.645 0 0 1-2.019 2.083z"
+            ></path>
+        </svg>
+    </a>
+--> <a href="https://www.linkedin.com/in/houltman" target="_blank" class="mx-3" aria-label="Linkedin" title="Linkedin"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: currentColor;transform: ;msFilter:;"><circle cx="4.983" cy="5.009" r="2.188"></circle><path d="M9.237 8.855v12.139h3.769v-6.003c0-1.584.298-3.118 2.262-3.118 1.937 0 1.961 1.811 1.961 3.218v5.904H21v-6.657c0-3.27-.704-5.783-4.526-5.783-1.835 0-3.065 1.007-3.568 1.96h-.051v-1.66H9.237zm-6.142 0H6.87v12.139H3.095z"></path> </svg> </a> <!--
+    <a href="/rss.xml" target="_blank" class="mx-3" aria-label="RSS Feed" title="RSS Feed">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            style="fill: currentColor;transform: ;msFilter:;"
+            ><path d="M19 20.001C19 11.729 12.271 5 4 5v2c7.168 0 13 5.832 13 13.001h2z"></path><path
+                d="M12 20.001h2C14 14.486 9.514 10 4 10v2c4.411 0 8 3.589 8 8.001z"></path><circle cx="6" cy="18" r="2"
+            ></circle>
+        </svg>
+    </a>
+--> </div> </aside> </div> </div> </body></html>
