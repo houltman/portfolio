@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="es" data-theme="lofi"> <head><meta name="google-site-verification" content="GfCd_f7L67UF_NV3RCCxz4ezf0Z0Iwy4yZ_QgoUSHq4"><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="images/favicon.svg"><meta name="generator" content="Astro v4.16.7"><!-- Primary Meta Tags --><title>Arquitectura multitenant para prop trading</title><meta name="title" content="Arquitectura multitenant para prop trading"><meta name="description" content="Diseña una plataforma de prop trading multitenant: define tenants, aísla datos, procesa operaciones del broker y escala el cálculo de riesgo con seguridad."><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://houltman.github.io/portfolio/blog/arquitectura-multitenant-para-prop-trading/"><meta property="og:title" content="Arquitectura multitenant para prop trading"><meta property="og:description" content="Diseña una plataforma de prop trading multitenant: define tenants, aísla datos, procesa operaciones del broker y escala el cálculo de riesgo con seguridad."><!--
+<meta property="og:image" content={new URL(image, Astro.url)} />
+--><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://houltman.github.io/portfolio/blog/arquitectura-multitenant-para-prop-trading/"><meta property="twitter:title" content="Arquitectura multitenant para prop trading"><meta property="twitter:description" content="Diseña una plataforma de prop trading multitenant: define tenants, aísla datos, procesa operaciones del broker y escala el cálculo de riesgo con seguridad."><!--
+<meta property="twitter:image" content={new URL(image, Astro.url)} />
+--><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><link rel="stylesheet" href="/portfolio/_astro/_page_.LBbOtx0T.css">
+<style>.time-line-container>div:last-child .education__time>.education__line{display:none}.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}
+</style><script type="module" src="/portfolio/_astro/hoisted.2daoxv0f.js"></script></head> <body> <div class="bg-base-100 drawer lg:drawer-open"> <input id="my-drawer" type="checkbox" class="drawer-toggle"> <div class="drawer-content bg-base-100"> <div class="sticky lg:hidden top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 bg-base-100 text-base-content shadow-sm"> <div class="navbar"> <div class="navbar-start"> <label for="my-drawer" class="btn btn-square btn-ghost"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </label> </div> <div class="navbar-center"> <a class="btn btn-ghost normal-case text-xl" href="/">Gabriel Houltman ⚡️</a> </div> <div class="navbar-end"></div> </div> </div> <div class="md:flex md:justify-center"> <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">  <main class="md:flex md:justify-center"> <article class="prose prose-lg max-w-[750px] prose-img:mx-auto"> <div class="not-prose mb-4"> <a href="/portfolio/blog" class="btn btn-ghost btn-sm">← Volver al blog</a> </div> <img src="/portfolio/images/blog/multitenant.png" alt="Arquitectura multitenant para prop trading" class="w-full aspect-video object-cover mb-6 rounded-lg" width="750" height="422" loading="lazy" decoding="async"> <h1 class="title my-2 text-4xl font-bold">Arquitectura multitenant para prop trading escalable</h1> <time>Jun 2, 2026</time> <br>  <a href="/portfolio/blog/tag/Arquitectura" class="badge badge-outline ml-2 no-underline"> Arquitectura </a><a href="/portfolio/blog/tag/Multitenant" class="badge badge-outline ml-2 no-underline"> Multitenant </a><a href="/portfolio/blog/tag/Plataforma" class="badge badge-outline ml-2 no-underline"> Plataforma </a><a href="/portfolio/blog/tag/Proptrading" class="badge badge-outline ml-2 no-underline"> Proptrading </a>  <div class="divider my-2"></div>  <p>Una plataforma de <strong>prop trading</strong> conecta traders, cuentas de evaluación, reglas de riesgo, pagos e integraciones con brokers. Cuando el producto sirve a varias firmas, cada cliente debe operar con sus propias políticas y datos sin afectar ni acceder a los de los demás.</p>
+<p>Diseñar para muchos usuarios no consiste simplemente en compartir una base de datos. Primero hay que decidir qué representa un <em>tenant</em>, cómo se comprueba su identidad en cada solicitud y qué garantías impiden que una consulta, evento o proceso cruce los límites entre clientes.</p>
+<p>Esta guía presenta un enfoque práctico para diseñar esa arquitectura, compara patrones de aislamiento y recorre las decisiones de datos, riesgo, seguridad y escalabilidad que conviene resolver antes de crecer.</p>
+<h2 id="qué-significa-multitenant-en-una-prop-firm">Qué significa multitenant en una prop firm</h2>
+<p>En una plataforma SaaS que ofrece software a varias prop firms, normalmente <strong>cada firma es un tenant</strong>. Los traders, sus cuentas de evaluación y sus operaciones son entidades dentro de ese tenant; no necesariamente tenants independientes.</p>
+<p>Esta distinción ayuda a elegir el nivel correcto de aislamiento:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Nivel</th><th>Ejemplo</th><th>Responsabilidad</th></tr></thead><tbody><tr><td>Plataforma</td><td>Servicio SaaS de prop trading</td><td>Operar el producto compartido</td></tr><tr><td>Tenant</td><td>Una prop firm cliente</td><td>Configurar políticas y administrar sus usuarios</td></tr><tr><td>Trader</td><td>Persona registrada en una firma</td><td>Participar en challenges y operar cuentas</td></tr><tr><td>Cuenta</td><td>Cuenta de evaluación o fondeada</td><td>Mantener saldo, operaciones y límites de riesgo</td></tr></tbody></table>
+<p>Si tu producto es para una única firma, esta puede ser el tenant raíz y los traders siguen siendo usuarios del mismo tenant. Si vendes una plataforma a distintas firmas, la separación entre ellas debe ser una frontera de autorización y datos.</p>
+<h2 id="definir-correctamente-los-límites-de-cada-tenant">Definir correctamente los límites de cada tenant</h2>
+<p>Antes de elegir base de datos o framework, define qué datos pertenecen a cada cliente y qué recursos son globales. En prop trading, normalmente conviene asociar al tenant:</p>
+<ul>
+<li>Usuarios, roles y configuración de la firma.</li>
+<li>Challenges, versiones de reglas y condiciones comerciales.</li>
+<li>Traders, cuentas, saldos y operaciones.</li>
+<li>Pagos, retiros, auditoría y documentos privados.</li>
+<li>Integraciones, credenciales y límites de uso.</li>
+</ul>
+<p>En cambio, catálogos generales, definiciones de instrumentos o contenido público podrían ser compartidos, siempre que no incluyan datos confidenciales del cliente.</p>
+<p>El tenant debe determinarse en el servidor a partir de una sesión autenticada y de una relación autorizada entre usuario y firma. No aceptes un <code>tenant_id</code> arbitrario del navegador como prueba de acceso. Un usuario que pertenece a más de una firma debe seleccionar un contexto, y el backend debe comprobar esa pertenencia para cada operación.</p>
+<h2 id="arquitectura-de-referencia-para-prop-trading">Arquitectura de referencia para prop trading</h2>
+<p>Una arquitectura inicial puede separar el tráfico interactivo del flujo de eventos de trading. El siguiente esquema muestra responsabilidades lógicas; no implica que cada bloque tenga que ser un microservicio independiente:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Trader / operador de la firma</span></span>
+<span class="line"><span>            |</span></span>
+<span class="line"><span>            v</span></span>
+<span class="line"><span>   CDN / WAF / API Gateway</span></span>
+<span class="line"><span>            |</span></span>
+<span class="line"><span>            v</span></span>
+<span class="line"><span> Identidad y autorización</span></span>
+<span class="line"><span>   (usuario + tenant)</span></span>
+<span class="line"><span>            |</span></span>
+<span class="line"><span>            v</span></span>
+<span class="line"><span> API de aplicación</span></span>
+<span class="line"><span>   |        |          \</span></span>
+<span class="line"><span>   v        v           v</span></span>
+<span class="line"><span> Cuentas  Challenges   Pagos</span></span>
+<span class="line"><span>   |        |</span></span>
+<span class="line"><span>   +----> Servicio de riesgo</span></span>
+<span class="line"><span>              ^</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span>       Eventos del broker</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span> Adaptador / normalizador</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span>       Cola de eventos</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span>   Consumidores idempotentes</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span>   Base transaccional + outbox</span></span>
+<span class="line"><span>              |</span></span>
+<span class="line"><span>     Analítica / reporting</span></span>
+<span class="line"><span></span></span></code></pre>
+<p>La identidad y el contexto del tenant se resuelven antes de consultar o modificar datos. Las reglas de negocio y las operaciones sensibles se validan en el servidor; el frontend no es una frontera de seguridad.</p>
+<h3 id="api-e-identidad-con-contexto-de-tenant">API e identidad con contexto de tenant</h3>
+<p>El servicio de identidad autentica a la persona. La capa de autorización determina qué acciones puede realizar y en qué firma. Un token firmado y verificado puede aportar claims de identidad, pero el backend también debe validar que la membresía siga activa y que el recurso solicitado pertenezca al contexto autorizado.</p>
+<p>En cada petición, propaga el contexto del tenant de forma explícita a los servicios y consultas. Evita inferirlo desde un parámetro de URL sin verificarlo, reutilizar un contexto global mutable o permitir que una tarea en segundo plano herede accidentalmente el tenant de otra solicitud.</p>
+<h3 id="servicios-separados-por-responsabilidad-de-negocio">Servicios separados por responsabilidad de negocio</h3>
+<p>Agrupa primero el código por límites funcionales: cuentas, challenges, riesgo, pagos e integración con brokers. Mantén una arquitectura modular dentro de una aplicación si el equipo o la carga no justifican distribuirla.</p>
+<p>Si separas componentes en servicios independientes, documenta quién es dueño de cada dato y cómo se propagan cambios entre ellos. Una división prematura puede añadir consistencia eventual, despliegues y operación distribuida sin mejorar el aislamiento.</p>
+<h3 id="eventos-para-desacoplar-la-integración-con-brokers">Eventos para desacoplar la integración con brokers</h3>
+<p>Un adaptador traduce mensajes específicos de cada broker a un formato interno versionado. La cola desacopla la recepción del evento del cálculo posterior, ayuda a absorber picos y permite reintentar fallos transitorios.</p>
+<p>Incluye en cada evento referencias verificables como <code>tenant_id</code>, cuenta, identificador del broker, identificador externo y hora del evento. Valida su relación con una integración y una cuenta registradas antes de actualizar datos. No des por fiable el tenant incluido en un mensaje externo solo porque llegó por una cola.</p>
+<h3 id="persistencia-de-negocio-y-analítica-por-separado">Persistencia de negocio y analítica por separado</h3>
+<p>La base transaccional debe conservar el estado necesario para tomar decisiones y reconstruir operaciones. La analítica puede alimentarse de eventos o de procesos de lectura optimizados, pero no debería convertirse accidentalmente en la fuente autoritativa del balance o del estado de riesgo.</p>
+<p>Define retención, respaldo y restauración según los requisitos del negocio y la regulación aplicable. Prueba que una restauración preserve la asociación entre tenant, trader, cuenta y operación.</p>
+<h2 id="elegir-el-patrón-de-aislamiento-de-datos">Elegir el patrón de aislamiento de datos</h2>
+<p>No existe un patrón universalmente mejor. La elección depende del número de firmas, sus requisitos contractuales, el volumen, la capacidad operativa y el impacto de una fuga o interrupción.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Patrón</th><th>Aislamiento y ventajas</th><th>Costes y riesgos</th><th>Cuándo considerarlo</th></tr></thead><tbody><tr><td>Tablas compartidas con <code>tenant_id</code></td><td>Operación sencilla, esquema común y cambios centralizados</td><td>Cada consulta y relación debe respetar el tenant</td><td>Opción inicial habitual para SaaS multitenant</td></tr><tr><td>Esquema por firma</td><td>Separa nombres y puede facilitar algunas tareas por cliente</td><td>Migraciones, conexiones y catálogo más difíciles a medida que crecen los tenants</td><td>Pocos clientes con requisitos de separación específicos</td></tr><tr><td>Base de datos por firma</td><td>Mayor separación de recursos y opciones de recuperación individual</td><td>Más coste, mantenimiento, migraciones y monitorización</td><td>Clientes grandes o con requisitos contractuales/regulatorios</td></tr></tbody></table>
+<p><strong>No crees automáticamente un esquema o una base de datos por trader.</strong> Si una firma tiene miles de cuentas, usar cada trader como unidad física de aislamiento puede multiplicar los objetos y complicar migraciones, conexiones, copias de seguridad y observabilidad. El límite suele ser la firma cliente; el aislamiento de cada trader se aplica mediante autorización y modelo de datos.</p>
+<p>Un enfoque gradual suele ser más sostenible: comienza con tablas compartidas bien protegidas, mide el comportamiento por tenant y reserva una base dedicada para clientes que realmente necesiten esa separación y cuyos costes puedan asumirse.</p>
+<h3 id="tablas-compartidas-con-tenant_id-y-rls">Tablas compartidas con tenant_id y RLS</h3>
+<p>Con tablas compartidas, cada registro propiedad de un cliente lleva un <code>tenant_id</code> obligatorio. Las consultas de la aplicación filtran por ese identificador y, en PostgreSQL, <strong>Row-Level Security (RLS)</strong> puede añadir una barrera adicional en la base de datos.</p>
+<p>La política debe aplicarse a todas las tablas que contienen datos de clientes y probarse con el mismo rol que usa la aplicación. RLS no reemplaza la autorización de negocio, la validación de pertenencia ni las consultas parametrizadas.</p>
+<h3 id="esquema-independiente-para-cada-firma">Esquema independiente para cada firma</h3>
+<p>Un esquema por firma separa objetos dentro de una instancia, pero no equivale por sí solo a una barrera de seguridad completa. La selección del esquema debe provenir de un mapeo controlado por el servidor, no de texto arbitrario enviado por un usuario.</p>
+<p>Antes de optar por este modelo, prueba cómo automatizarás altas y bajas, migraciones, permisos, conexiones del pool, copias de seguridad y observabilidad cuando aumente el número de firmas.</p>
+<h3 id="base-de-datos-dedicada-para-clientes-regulados">Base de datos dedicada para clientes regulados</h3>
+<p>Una base independiente puede reducir el radio de impacto y permitir ventanas de mantenimiento, restauraciones o configuraciones distintas por cliente. A cambio, necesitas automatizar aprovisionamiento, credenciales, migraciones y monitorización para toda la flota.</p>
+<p>Considera este patrón cuando el aislamiento dedicado sea un requisito real del cliente o del cumplimiento aplicable. No asumas que una base separada resuelve por sí sola el control de acceso, la seguridad de credenciales o la continuidad operativa.</p>
+<h2 id="modelo-de-datos-seguro-para-trades-y-cuentas">Modelo de datos seguro para trades y cuentas</h2>
+<p>En tablas compartidas, modela la pertenencia al tenant como parte de las relaciones, no solo como un filtro que cada desarrollador debe recordar. Por ejemplo, una cuenta y su trader deben pertenecer a la misma firma:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> traders</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  id UUID </span><span style="color:#F97583">PRIMARY KEY</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  tenant_id UUID </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> REFERENCES</span><span style="color:#E1E4E8"> tenants(id),</span></span>
+<span class="line"><span style="color:#E1E4E8">  email </span><span style="color:#F97583">TEXT</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">  UNIQUE</span><span style="color:#E1E4E8"> (tenant_id, id),</span></span>
+<span class="line"><span style="color:#F97583">  UNIQUE</span><span style="color:#E1E4E8"> (tenant_id, email)</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> TABLE</span><span style="color:#B392F0"> trading_accounts</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  id UUID </span><span style="color:#F97583">PRIMARY KEY</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  tenant_id UUID </span><span style="color:#F97583">NOT NULL</span><span style="color:#F97583"> REFERENCES</span><span style="color:#E1E4E8"> tenants(id),</span></span>
+<span class="line"><span style="color:#E1E4E8">  trader_id UUID </span><span style="color:#F97583">NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">  status</span><span style="color:#F97583"> TEXT</span><span style="color:#F97583"> NOT NULL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#F97583">  UNIQUE</span><span style="color:#E1E4E8"> (tenant_id, id),</span></span>
+<span class="line"><span style="color:#F97583">  FOREIGN KEY</span><span style="color:#E1E4E8"> (tenant_id, trader_id)</span></span>
+<span class="line"><span style="color:#F97583">    REFERENCES</span><span style="color:#E1E4E8"> traders (tenant_id, id)</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> INDEX</span><span style="color:#B392F0"> trading_accounts_tenant_status_idx</span></span>
+<span class="line"><span style="color:#F97583">  ON</span><span style="color:#E1E4E8"> trading_accounts (tenant_id, </span><span style="color:#F97583">status</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<p>La clave foránea compuesta impide enlazar por error una cuenta de una firma con un trader de otra. Adapta unicidad e índices al modelo real: por ejemplo, un correo podría repetirse entre tenants, pero no dentro de una misma firma.</p>
+<h3 id="claves-foráneas-e-índices-compuestos-por-tenant">Claves foráneas e índices compuestos por tenant</h3>
+<p>Incluye <code>tenant_id</code> en las claves únicas que solo deben ser únicas dentro de una firma. En tablas de operaciones, diseña claves idempotentes usando el identificador de integración y el identificador externo del evento, junto con el ámbito de cuenta o tenant que corresponda.</p>
+<p>Los índices deben reflejar las consultas reales, por ejemplo <code>tenant_id</code>, cuenta y fecha. No añadas índices indiscriminadamente: cada índice ocupa espacio y puede encarecer la escritura. Revisa planes de consulta con datos representativos y con tenants de distinto volumen.</p>
+<h2 id="ejemplo-de-aislamiento-en-postgresql-con-rls">Ejemplo de aislamiento en PostgreSQL con RLS</h2>
+<p>La siguiente política ilustra el principio para una tabla compartida. El servidor debe establecer el contexto dentro de cada transacción usando el tenant ya autenticado y autorizado:</p>
+<h3 id="política-de-filas-vinculada-al-contexto-autenticado">Política de filas vinculada al contexto autenticado</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">ALTER</span><span style="color:#F97583"> TABLE</span><span style="color:#E1E4E8"> trading_accounts </span><span style="color:#F97583">ENABLE</span><span style="color:#F97583"> ROW</span><span style="color:#F97583"> LEVEL</span><span style="color:#F97583"> SECURITY</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">ALTER</span><span style="color:#F97583"> TABLE</span><span style="color:#E1E4E8"> trading_accounts </span><span style="color:#F97583">FORCE</span><span style="color:#F97583"> ROW</span><span style="color:#F97583"> LEVEL</span><span style="color:#F97583"> SECURITY</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">CREATE</span><span style="color:#F97583"> POLICY</span><span style="color:#E1E4E8"> trading_accounts_tenant_policy</span></span>
+<span class="line"><span style="color:#F97583">ON</span><span style="color:#E1E4E8"> trading_accounts</span></span>
+<span class="line"><span style="color:#F97583">USING</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  tenant_id </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> current_setting(</span><span style="color:#9ECBFF">'app.tenant_id'</span><span style="color:#E1E4E8">, true)::uuid</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">WITH</span><span style="color:#F97583"> CHECK</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#E1E4E8">  tenant_id </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> current_setting(</span><span style="color:#9ECBFF">'app.tenant_id'</span><span style="color:#E1E4E8">, true)::uuid</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<p>Al comenzar una transacción, la aplicación puede establecer la variable local con un parámetro enlazado:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="sql"><code><span class="line"><span style="color:#F97583">BEGIN</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">SELECT</span><span style="color:#E1E4E8"> set_config(</span><span style="color:#9ECBFF">'app.tenant_id'</span><span style="color:#E1E4E8">, $</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, true);</span></span>
+<span class="line"><span style="color:#6A737D">-- Ejecutar aquí las consultas de la transacción.</span></span>
+<span class="line"><span style="color:#F97583">COMMIT</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span></code></pre>
+<p>La opción <code>true</code> limita el valor a la transacción, lo que ayuda a evitar que una conexión reutilizada por un pool conserve el contexto anterior. Aun así, debes comprobar el comportamiento del pool y asegurar que cada transacción establece su tenant antes de consultar.</p>
+<p>Usa un rol de aplicación sin privilegios de propietario ni <code>BYPASSRLS</code>; los superusuarios pueden eludir RLS. El valor de <code>$1</code> debe proceder del contexto de autorización del servidor, nunca directamente de una entrada sin validar. Incluye pruebas que intenten leer y escribir filas de otro tenant y que verifiquen el comportamiento cuando no existe contexto.</p>
+<h2 id="procesar-eventos-del-broker-con-fiabilidad">Procesar eventos del broker con fiabilidad</h2>
+<p>Los brokers pueden enviar eventos repetidos, retrasados o en distinto orden al esperado. Diseña los consumidores para que el mismo evento no cree dos operaciones ni aplique dos veces un cambio de saldo.</p>
+<h3 id="idempotencia-orden-y-recuperación-ante-fallos">Idempotencia orden y recuperación ante fallos</h3>
+<ul>
+<li><strong>Idempotencia:</strong> guarda una clave única por evento externo y evita procesarlo dos veces.</li>
+<li><strong>Orden:</strong> define qué hacer si una actualización llega antes que la operación que la originó.</li>
+<li><strong>Reintentos:</strong> separa fallos transitorios de errores permanentes y limita los reintentos.</li>
+<li><strong>Cola de errores:</strong> conserva mensajes no procesables para su diagnóstico y reprocesamiento controlado.</li>
+<li><strong>Transacción:</strong> persiste la operación y el estado derivado de forma consistente.</li>
+<li><strong>Outbox:</strong> si publicas un evento tras guardar una transacción, considera un patrón outbox para evitar guardar el cambio y perder su notificación.</li>
+</ul>
+<p>Registra la hora del evento y la hora de recepción. Esa diferencia ayuda a investigar retrasos, pero no sustituyas la secuencia o identificadores del proveedor por una suposición de orden basada únicamente en la hora del servidor.</p>
+<h2 id="proteger-cálculos-de-riesgo-y-drawdown">Proteger cálculos de riesgo y drawdown</h2>
+<p>Los límites de pérdida diaria, pérdida máxima, objetivo de beneficio y estado de una cuenta son reglas críticas. Deben tener una definición inequívoca, una fuente de datos identificada y un comportamiento documentado cuando faltan eventos o hay discrepancias con el broker.</p>
+<h3 id="datos-precisos-y-reglas-de-riesgo-auditables">Datos precisos y reglas de riesgo auditables</h3>
+<ul>
+<li>Usa tipos decimales apropiados para importes; evita <code>float</code> binario para cálculos financieros.</li>
+<li>Define la zona horaria, el horario de mercado y el momento de reinicio de los límites diarios.</li>
+<li>Versiona las reglas asociadas a cada challenge para poder explicar qué configuración se aplicó.</li>
+<li>Haz que las transiciones de estado sean explícitas y auditables.</li>
+<li>Protege actualizaciones concurrentes de una misma cuenta con transacciones o mecanismos de consistencia adecuados.</li>
+<li>Permite reconciliar periódicamente la información interna con la fuente externa acordada.</li>
+</ul>
+<p>El sistema debe fallar de forma segura si no puede confirmar datos necesarios para una decisión de riesgo. Por ejemplo, no debería marcar una cuenta como conforme basándose en información incompleta sin una política definida.</p>
+<h2 id="seguridad-y-autorización-entre-tenants">Seguridad y autorización entre tenants</h2>
+<p>El aislamiento debe existir en todas las capas: API, servicios, base de datos, caché, almacenamiento de archivos, colas, tareas programadas y herramientas internas. Un filtro correcto en una ruta HTTP no protege automáticamente los procesos en segundo plano.</p>
+<h3 id="controles-para-evitar-fugas-de-datos-entre-firmas">Controles para evitar fugas de datos entre firmas</h3>
+<ul>
+<li>Valida identidad, membresía, rol y permiso para cada acción.</li>
+<li>Deriva el tenant en el servidor y propaga el contexto de forma explícita.</li>
+<li>Incluye el ámbito del tenant en claves de caché y rutas de almacenamiento.</li>
+<li>Aplica permisos mínimos a credenciales de brokers y servicios externos.</li>
+<li>No registres tokens, credenciales ni datos personales innecesarios.</li>
+<li>Usa límites de frecuencia y recursos por cliente para contener abusos o cargas anómalas.</li>
+<li>Prueba accesos cruzados entre tenants en lectura, escritura, exportación y administración.</li>
+</ul>
+<p>Evita incluir datos confidenciales en mensajes de error. Las herramientas de soporte y los roles administrativos también necesitan límites, auditoría y justificación de acceso.</p>
+<h2 id="escalar-sin-crear-límites-operativos-innecesarios">Escalar sin crear límites operativos innecesarios</h2>
+<p>Escala primero midiendo dónde se concentra el trabajo. Las consultas de operaciones históricas, los cálculos de riesgo en tiempo real y los reportes suelen tener patrones de acceso distintos.</p>
+<h3 id="aislar-cargas-ruidosas-y-medir-capacidad">Aislar cargas ruidosas y medir capacidad</h3>
+<ul>
+<li>Instrumenta latencia, errores, cola pendiente y consumo de recursos por tenant.</li>
+<li>Evita que una firma con mucha actividad agote conexiones o capacidad de procesamiento compartida.</li>
+<li>Separa cargas transaccionales de reportes pesados cuando las mediciones lo justifiquen.</li>
+<li>Particiona tablas grandes por tiempo u otra clave cuando las consultas y la retención lo requieran.</li>
+<li>Define cuotas y políticas de limitación para tareas costosas.</li>
+<li>Considera mover un tenant de alto volumen a recursos dedicados si las métricas y el contrato lo justifican.</li>
+</ul>
+<p>No hay un número universal de traders a partir del cual debas cambiar de patrón. Haz pruebas de carga con una mezcla realista de operaciones, consultas y eventos; mide percentiles de latencia, errores y recuperación ante fallos antes de decidir.</p>
+<h2 id="observabilidad-con-métricas-por-tenant">Observabilidad con métricas por tenant</h2>
+<p>Una vista global es necesaria, pero puede ocultar que un cliente sufre errores o retrasos mientras el promedio parece saludable. Añade dimensiones de tenant a las métricas y trazas con controles para evitar que esa información se convierta en exposición de datos.</p>
+<h3 id="alertas-útiles-sin-exponer-datos-sensibles">Alertas útiles sin exponer datos sensibles</h3>
+<p>Supervisa como mínimo:</p>
+<ul>
+<li>Latencia y errores de API por ruta y tenant.</li>
+<li>Antigüedad y volumen de eventos pendientes por integración.</li>
+<li>Fallos de procesamiento, duplicados y mensajes enviados a la cola de errores.</li>
+<li>Tiempo de cálculo y discrepancias durante la reconciliación de riesgo.</li>
+<li>Consumo de conexiones, almacenamiento y cuotas.</li>
+<li>Accesos denegados y señales de intentos de cruce entre tenants.</li>
+</ul>
+<p>Usa identificadores de correlación para seguir una operación desde el broker hasta su resultado. Evita poner correos, tokens o payloads completos en etiquetas métricas: las etiquetas de alta cardinalidad y los datos sensibles dificultan tanto el coste como la privacidad.</p>
+<h2 id="plan-gradual-para-implementar-la-arquitectura">Plan gradual para implementar la arquitectura</h2>
+<p>No es necesario construir una plataforma distribuida desde el primer día. Avanza en etapas que puedas probar:</p>
+<h3 id="etapas-para-validar-aislamiento-y-rendimiento">Etapas para validar aislamiento y rendimiento</h3>
+<ol>
+<li><strong>Define el modelo:</strong> documenta tenant, usuarios, traders, cuentas y datos compartidos.</li>
+<li><strong>Implementa autorización:</strong> resuelve el tenant en el servidor y comprueba pertenencia en cada operación.</li>
+<li><strong>Añade aislamiento de datos:</strong> aplica claves compuestas y, si usas PostgreSQL, evalúa RLS como defensa adicional.</li>
+<li><strong>Prueba los límites:</strong> automatiza pruebas positivas y negativas entre firmas y con contextos ausentes.</li>
+<li><strong>Integra eventos:</strong> normaliza mensajes, implementa idempotencia, reintentos y reconciliación.</li>
+<li><strong>Mide cargas:</strong> prueba tráfico representativo y detecta tenants ruidosos antes de escalar.</li>
+<li><strong>Automatiza operación:</strong> versiona migraciones, respaldos, restauraciones y procedimientos de respuesta.</li>
+</ol>
+<h2 id="conclusión-aislamiento-según-riesgo-y-necesidad">Conclusión: aislamiento según riesgo y necesidad</h2>
+<p>Una arquitectura multitenant sólida comienza por definir correctamente al tenant y hacer cumplir esa frontera en cada acceso a datos y cada proceso. Para muchas plataformas, las tablas compartidas con <code>tenant_id</code>, restricciones relacionales y controles de autorización ofrecen un punto de partida práctico; RLS puede añadir defensa en profundidad. Esquemas o bases dedicadas son alternativas cuando sus beneficios justifican el coste operativo.</p>
+<p>En prop trading, el aislamiento de datos debe ir acompañado de eventos idempotentes, cálculos de riesgo auditables, permisos mínimos y pruebas de acceso cruzado. Empieza con límites claros, mide el sistema con cargas reales y aumenta la separación cuando los requisitos o la evidencia lo pidan.</p>  </article> </main>  </main> </div> <footer class="footer footer-center block mb-5 pt-10"> <div class="pb-2">
+&copy; 2026 Gabriel Houltman
+</div> </footer>  </div> <div class="drawer-side z-40"> <label for="my-drawer" class="drawer-overlay"></label> <aside class="px-2 pt-2 h-auto min-h-full w-[19rem] bg-base-200 text-base-content flex flex-col"> <div class="w-fit mx-auto mt-5 mb-6"> <a href="/portfolio/"> <div class="avatar transition ease-in-out hover:scale-[102%] block m-auto"> <div class="w-[8.5rem]"> <img src="/portfolio/images/profile.jpg" class="mask mask-circle" alt="Profile image" width="300" height="300" loading="lazy" decoding="async"> </div> </div> </a> </div> <ul class="menu grow shrink menu-md overflow-y-auto"> <li><a class="py-3 text-base" id="home" href="/portfolio/">Home</a></li> <li><a class="py-3 text-base" id="projects" href="/portfolio/projects">Projects</a></li> <!-- <li><a class="py-3 text-base" id="services" href="/portfolio/services">Services</a></li>
+    <li><a class="py-3 text-base" id="store" href="/portfolio/store">Store</a></li>--> <li><a class="py-3 text-base" id="blog" href="/portfolio/blog/">Blog</a></li> <li><a class="py-3 text-base" id="cv" href="/portfolio/cv">CV</a></li> <li> <a class="py-3 text-base" href="mailto:houltman@gmail.com" target="_blank" referrerpolicy="no-referrer-when-downgrade">Contact</a> </li> </ul> <script>(function(){const sideBarActiveItemID = undefined;
+const activeClass = "bg-base-300";
+
+const activeItemElem = document.getElementById(sideBarActiveItemID);
+activeItemElem && activeItemElem.classList.add(activeClass);
+})();</script> <div class="block sticky pointer-events-none bottom-10 bg-base-200 justify-center h-12 [mask-image:linear-gradient(transparent,#000000)]"></div> <div class="social-icons px-4 pb-5 pt-1 flex self-center justify-center sticky bottom-0 bg-base-200"> <a href="https://github.com/houltman" target="_blank" class="mx-3" aria-label="Github" title="Github"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: currentColor;transform: ;msFilter:;"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.026 2c-5.509 0-9.974 4.465-9.974 9.974 0 4.406 2.857 8.145 6.821 9.465.499.09.679-.217.679-.481 0-.237-.008-.865-.011-1.696-2.775.602-3.361-1.338-3.361-1.338-.452-1.152-1.107-1.459-1.107-1.459-.905-.619.069-.605.069-.605 1.002.07 1.527 1.028 1.527 1.028.89 1.524 2.336 1.084 2.902.829.091-.645.351-1.085.635-1.334-2.214-.251-4.542-1.107-4.542-4.93 0-1.087.389-1.979 1.024-2.675-.101-.253-.446-1.268.099-2.64 0 0 .837-.269 2.742 1.021a9.582 9.582 0 0 1 2.496-.336 9.554 9.554 0 0 1 2.496.336c1.906-1.291 2.742-1.021 2.742-1.021.545 1.372.203 2.387.099 2.64.64.696 1.024 1.587 1.024 2.675 0 3.833-2.33 4.675-4.552 4.922.355.308.675.916.675 1.846 0 1.334-.012 2.41-.012 2.737 0 .267.178.577.687.479C19.146 20.115 22 16.379 22 11.974 22 6.465 17.535 2 12.026 2z"></path> </svg> </a> <a href="https://www.youtube.com/@houltman" target="_blank" class="mx-3" aria-label="YouTube" title="YouTube"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: currentColor; transform: ; msFilter: ;"> <path d="M21.593 7.203a2.506 2.506 0 0 0-1.762-1.766C18.265 5.007 12 5 12 5s-6.264-.007-7.831.404a2.56 2.56 0 0 0-1.766 1.778c-.413 1.566-.417 4.814-.417 4.814s-.004 3.248.406 4.814a2.51 2.51 0 0 0 1.754 1.795c1.582.43 7.854.437 7.854.437s6.264.007 7.831-.403a2.5 2.5 0 0 0 1.762-1.763c.414-1.565.41-4.812.41-4.812s.022-3.265-.406-4.831zM9.996 15.005l.005-6 5.207 3.005-5.212 2.995z"></path> </svg> </a> <a href="https://www.linkedin.com/in/houltman" target="_blank" class="mx-3" aria-label="Linkedin" title="Linkedin"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: currentColor;transform: ;msFilter:;"><circle cx="4.983" cy="5.009" r="2.188"></circle><path d="M9.237 8.855v12.139h3.769v-6.003c0-1.584.298-3.118 2.262-3.118 1.937 0 1.961 1.811 1.961 3.218v5.904H21v-6.657c0-3.27-.704-5.783-4.526-5.783-1.835 0-3.065 1.007-3.568 1.96h-.051v-1.66H9.237zm-6.142 0H6.87v12.139H3.095z"></path> </svg> </a> </div> </aside> </div> </div> </body></html>

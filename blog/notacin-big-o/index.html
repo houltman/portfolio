@@ -1,68 +1,113 @@
-<!DOCTYPE html><html lang="es" data-theme="lofi"> <head><meta name="google-site-verification" content="GfCd_f7L67UF_NV3RCCxz4ezf0Z0Iwy4yZ_QgoUSHq4"><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="images/favicon.svg"><meta name="generator" content="Astro v4.16.7"><!-- Primary Meta Tags --><title>Notación Big O</title><meta name="title" content="Notación Big O"><meta name="description" content="La notación Big O es una herramienta fundamental en la ciencia de la computación para describir la complejidad algorítmica."><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://houltman.github.io/portfolio/blog/notacin-big-o/"><meta property="og:title" content="Notación Big O"><meta property="og:description" content="La notación Big O es una herramienta fundamental en la ciencia de la computación para describir la complejidad algorítmica."><!--
+<!DOCTYPE html><html lang="es" data-theme="lofi"> <head><meta name="google-site-verification" content="GfCd_f7L67UF_NV3RCCxz4ezf0Z0Iwy4yZ_QgoUSHq4"><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="images/favicon.svg"><meta name="generator" content="Astro v4.16.7"><!-- Primary Meta Tags --><title>Notación Big O: complejidad algorítmica y ejemplos</title><meta name="title" content="Notación Big O: complejidad algorítmica y ejemplos"><meta name="description" content="Entiende la notación Big O con ejemplos de O(1), O(n) y O(n²), aprende a analizar tiempo y espacio y compara cómo escala cada algoritmo."><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://houltman.github.io/portfolio/blog/notacin-big-o/"><meta property="og:title" content="Notación Big O: complejidad algorítmica y ejemplos"><meta property="og:description" content="Entiende la notación Big O con ejemplos de O(1), O(n) y O(n²), aprende a analizar tiempo y espacio y compara cómo escala cada algoritmo."><!--
 <meta property="og:image" content={new URL(image, Astro.url)} />
---><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://houltman.github.io/portfolio/blog/notacin-big-o/"><meta property="twitter:title" content="Notación Big O"><meta property="twitter:description" content="La notación Big O es una herramienta fundamental en la ciencia de la computación para describir la complejidad algorítmica."><!--
+--><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://houltman.github.io/portfolio/blog/notacin-big-o/"><meta property="twitter:title" content="Notación Big O: complejidad algorítmica y ejemplos"><meta property="twitter:description" content="Entiende la notación Big O con ejemplos de O(1), O(n) y O(n²), aprende a analizar tiempo y espacio y compara cómo escala cada algoritmo."><!--
 <meta property="twitter:image" content={new URL(image, Astro.url)} />
---><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><link rel="stylesheet" href="/portfolio/_astro/_page_.BHBbadtZ.css">
+--><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><link rel="stylesheet" href="/portfolio/_astro/_page_.LBbOtx0T.css">
 <style>.time-line-container>div:last-child .education__time>.education__line{display:none}.astro-route-announcer{position:absolute;left:0;top:0;clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap;width:1px;height:1px}
-</style><script type="module" src="/portfolio/_astro/hoisted.2daoxv0f.js"></script></head> <body> <div class="bg-base-100 drawer lg:drawer-open"> <input id="my-drawer" type="checkbox" class="drawer-toggle"> <div class="drawer-content bg-base-100"> <div class="sticky lg:hidden top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 bg-base-100 text-base-content shadow-sm"> <div class="navbar"> <div class="navbar-start"> <label for="my-drawer" class="btn btn-square btn-ghost"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </label> </div> <div class="navbar-center"> <a class="btn btn-ghost normal-case text-xl" href="/">Gabriel Houltman ⚡️</a> </div> <div class="navbar-end"></div> </div> </div> <div class="md:flex md:justify-center"> <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">  <main class="md:flex md:justify-center"> <article class="prose prose-lg max-w-[750px] prose-img:mx-auto"> <div class="not-prose mb-4"> <a href="/portfolio/blog" class="btn btn-ghost btn-sm">← Volver al blog</a> </div> <img src="/portfolio/images/blog/big-o.jpeg" alt="Notación Big O" class="w-full aspect-video object-cover mb-6 rounded-lg" width="750" height="422" loading="lazy" decoding="async"> <h1 class="title my-2 text-4xl font-bold">Notación Big O</h1> <time>Nov 2, 2024</time> <br>  <a href="/portfolio/blog/tag/algoritmos" class="badge badge-outline ml-2 no-underline"> algoritmos </a><a href="/portfolio/blog/tag/computación" class="badge badge-outline ml-2 no-underline"> computación </a>  <div class="divider my-2"></div>  <h1 id="notación-big-o">Notación Big O</h1>
-<p>La notación Big O es un concepto clave en la teoría de algoritmos que se utiliza para describir la complejidad de un algoritmo en función del tamaño de su entrada. Esta notación permite a los desarrolladores y científicos de la computación analizar el rendimiento de un algoritmo y compararlo con otros, lo que es esencial para optimizar el código y mejorar la eficiencia de las aplicaciones.</p>
-<h2 id="qué-es-la-notación-big-o">¿Qué es la Notación Big O?</h2>
-<p>La notación Big O se utiliza para clasificar algoritmos según su tiempo de ejecución o su uso de espacio, en relación con el tamaño de la entrada. Representa el límite superior del tiempo de ejecución en el peor de los casos, lo que significa que describe la complejidad máxima que un algoritmo puede alcanzar. Esto ayuda a estimar cómo se comportará el algoritmo a medida que aumenta la cantidad de datos.</p>
-<h3 id="ejemplos-comunes-de-notación-big-o">Ejemplos Comunes de Notación Big O</h3>
+</style><script type="module" src="/portfolio/_astro/hoisted.2daoxv0f.js"></script></head> <body> <div class="bg-base-100 drawer lg:drawer-open"> <input id="my-drawer" type="checkbox" class="drawer-toggle"> <div class="drawer-content bg-base-100"> <div class="sticky lg:hidden top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 bg-base-100 text-base-content shadow-sm"> <div class="navbar"> <div class="navbar-start"> <label for="my-drawer" class="btn btn-square btn-ghost"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </label> </div> <div class="navbar-center"> <a class="btn btn-ghost normal-case text-xl" href="/">Gabriel Houltman ⚡️</a> </div> <div class="navbar-end"></div> </div> </div> <div class="md:flex md:justify-center"> <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">  <main class="md:flex md:justify-center"> <article class="prose prose-lg max-w-[750px] prose-img:mx-auto"> <div class="not-prose mb-4"> <a href="/portfolio/blog" class="btn btn-ghost btn-sm">← Volver al blog</a> </div> <img src="/portfolio/images/blog/big-o.jpeg" alt="Gráfico de complejidad Big O que compara O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ) y O(n!) según el número de elementos y las operaciones." class="w-full aspect-video object-cover mb-6 rounded-lg" width="750" height="422" loading="lazy" decoding="async"> <h1 class="title my-2 text-4xl font-bold">Notación Big O: guía de complejidad algorítmica</h1> <time>Nov 2, 2024</time> <br>  <a href="/portfolio/blog/tag/algoritmos" class="badge badge-outline ml-2 no-underline"> algoritmos </a><a href="/portfolio/blog/tag/computación" class="badge badge-outline ml-2 no-underline"> computación </a>  <div class="divider my-2"></div>  <p>La notación Big O permite describir cómo crece el trabajo que realiza un algoritmo cuando aumenta el tamaño de su entrada. No predice por sí sola el tiempo exacto en segundos: sirve para razonar sobre escalabilidad y comparar soluciones bajo supuestos similares.</p>
+<h2 id="qué-significa-la-notación-big-o-en-algoritmos">Qué significa la notación Big O en algoritmos</h2>
+<p>En análisis de algoritmos, <strong>O(f(n))</strong> expresa un límite superior asintótico para el crecimiento de una función, donde <code>n</code> representa el tamaño de la entrada. Al describir el peor caso, Big O ofrece una cota que el algoritmo no supera en crecimiento, salvo constantes y para entradas suficientemente grandes.</p>
+<p>Al simplificar la expresión, se suelen omitir constantes y términos de menor crecimiento. Por ejemplo, <code>3n² + 5n + 10</code> se expresa como <strong>O(n²)</strong>. Esto ayuda a comparar tendencias cuando la entrada es grande, pero no significa que dos algoritmos con la misma notación vayan a tardar lo mismo en la práctica.</p>
+<h3 id="complejidades-big-o-comunes-y-sus-ejemplos">Complejidades Big O comunes y sus ejemplos</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Complejidad</th><th>Nombre habitual</th><th>Ejemplo</th><th>Crecimiento aproximado</th></tr></thead><tbody><tr><td><strong>O(1)</strong></td><td>Constante</td><td>Acceder a un elemento por índice en un arreglo</td><td>El trabajo no depende de <code>n</code></td></tr><tr><td><strong>O(log n)</strong></td><td>Logarítmica</td><td>Búsqueda binaria en datos ordenados</td><td>El rango se reduce en cada paso</td></tr><tr><td><strong>O(n)</strong></td><td>Lineal</td><td>Recorrer una lista una vez</td><td>Duplica el trabajo si se duplica <code>n</code></td></tr><tr><td><strong>O(n log n)</strong></td><td>Lineal-logarítmica</td><td>Merge sort</td><td>Divide y procesa los elementos</td></tr><tr><td><strong>O(n²)</strong></td><td>Cuadrática</td><td>Comparar cada par de elementos</td><td>Puede cuadruplicarse si se duplica <code>n</code></td></tr><tr><td><strong>O(2ⁿ)</strong></td><td>Exponencial</td><td>Probar combinaciones de subconjuntos</td><td>El crecimiento se acelera rápidamente</td></tr><tr><td><strong>O(n!)</strong></td><td>Factorial</td><td>Enumerar todas las permutaciones</td><td>Solo es viable para entradas pequeñas</td></tr></tbody></table>
+<p>Las tasas de crecimiento permiten entender por qué una solución que funciona con pocos datos puede volverse impráctica a gran escala. Son categorías de análisis, no garantías de una duración concreta.</p>
+<h3 id="cómo-leer-el-crecimiento-de-una-función">Cómo leer el crecimiento de una función</h3>
+<ul>
+<li><strong>O(1):</strong> una operación de acceso puede ser constante; buscar un valor en una tabla hash es O(1) en promedio bajo supuestos habituales, pero puede ser O(n) en el peor caso.</li>
+<li><strong>O(log n):</strong> una búsqueda binaria descarta aproximadamente la mitad de los candidatos en cada iteración y requiere que los datos estén ordenados.</li>
+<li><strong>O(n):</strong> una pasada completa por <code>n</code> elementos requiere trabajo proporcional al tamaño de la lista.</li>
+<li><strong>O(n²):</strong> dos recorridos anidados sobre la misma entrada suelen comparar hasta <code>n × n</code> pares.</li>
+</ul>
+<h3 id="ejemplos-de-código-para-entender-big-o">Ejemplos de código para entender Big O</h3>
+<p>Una sola pasada por la lista tiene <strong>O(n)</strong> de tiempo y <strong>O(1)</strong> de espacio adicional:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> contiene_valor</span><span style="color:#E1E4E8">(valores, objetivo):</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> valor </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> valores:</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> valor </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> objetivo:</span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#79B8FF"> True</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> False</span></span>
+<span class="line"></span></code></pre>
+<p>En cambio, comparar cada par tiene <strong>O(n²)</strong> de tiempo. El siguiente ejemplo también usa <strong>O(1)</strong> de espacio adicional porque no crea una estructura que crezca con la entrada:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> contar_pares_iguales</span><span style="color:#E1E4E8">(valores):</span></span>
+<span class="line"><span style="color:#E1E4E8">    pares </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">len</span><span style="color:#E1E4E8">(valores)):</span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> j </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> range</span><span style="color:#E1E4E8">(i </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">len</span><span style="color:#E1E4E8">(valores)):</span></span>
+<span class="line"><span style="color:#F97583">            if</span><span style="color:#E1E4E8"> valores[i] </span><span style="color:#F97583">==</span><span style="color:#E1E4E8"> valores[j]:</span></span>
+<span class="line"><span style="color:#E1E4E8">                pares </span><span style="color:#F97583">+=</span><span style="color:#79B8FF"> 1</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> pares</span></span>
+<span class="line"></span></code></pre>
+<h2 id="tiempo-y-espacio-dos-formas-de-medir-complejidad">Tiempo y espacio: dos formas de medir complejidad</h2>
+<p>La complejidad temporal estima cómo crece el número de operaciones con la entrada. La complejidad espacial estima cuánta memoria adicional requiere el algoritmo. Conviene distinguir el espacio auxiliar de la memoria ocupada por la entrada original.</p>
+<p>Por ejemplo, crear una copia completa de una lista de <code>n</code> elementos requiere <strong>O(n)</strong> de espacio adicional, mientras que recorrerla y conservar solo un contador requiere <strong>O(1)</strong>. Una solución puede reducir tiempo a cambio de memoria; la elección depende de las restricciones del sistema.</p>
+<h2 id="por-qué-big-o-ayuda-a-comparar-algoritmos">Por qué Big O ayuda a comparar algoritmos</h2>
+<p>Big O ayuda a detectar cómo podría escalar una solución antes de someterla a cargas mayores. También permite comparar enfoques, identificar bucles o estructuras costosas y decidir dónde conviene medir y optimizar.</p>
+<p>Sin embargo, la notación no reemplaza los benchmarks. Para entradas pequeñas, una solución con más pasos de preparación puede ser más lenta pese a tener una mejor complejidad asintótica. El lenguaje, el hardware, la distribución de los datos y las constantes también influyen.</p>
+<h3 id="pasos-para-analizar-complejidad-algorítmica">Pasos para analizar complejidad algorítmica</h3>
 <ol>
-<li>
-<p><strong>O(1)</strong>: <strong>Complejidad Constante</strong></p>
-<ul>
-<li>El tiempo de ejecución no cambia sin importar el tamaño de la entrada. Ejemplo: acceder a un elemento en un array.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(log n)</strong>: <strong>Complejidad Logarítmica</strong></p>
-<ul>
-<li>El tiempo de ejecución crece logarítmicamente en relación con el tamaño de la entrada. Ejemplo: búsqueda binaria en un array ordenado.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(n)</strong>: <strong>Complejidad Lineal</strong></p>
-<ul>
-<li>El tiempo de ejecución crece linealmente a medida que aumenta el tamaño de la entrada. Ejemplo: recorrer todos los elementos de un array.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(n log n)</strong>: <strong>Complejidad Lineal-Logarítmica</strong></p>
-<ul>
-<li>Común en algoritmos de ordenación eficientes como el Merge Sort y Quick Sort.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(n²)</strong>: <strong>Complejidad Cuadrática</strong></p>
-<ul>
-<li>El tiempo de ejecución crece cuadráticamente en relación con el tamaño de la entrada. Ejemplo: algoritmos de ordenación de burbuja o selección.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(2^n)</strong>: <strong>Complejidad Exponencial</strong></p>
-<ul>
-<li>El tiempo de ejecución se duplica con cada incremento en el tamaño de la entrada. Ejemplo: resolver el problema de la mochila utilizando una solución de fuerza bruta.</li>
-</ul>
-</li>
-<li>
-<p><strong>O(n!)</strong>: <strong>Complejidad Factorial</strong></p>
-<ul>
-<li>Aumenta extremadamente rápido, común en problemas de permutación. Ejemplo: el problema del vendedor viajero.</li>
-</ul>
-</li>
+<li><strong>Define <code>n</code>:</strong> especifica qué representa el tamaño de entrada.</li>
+<li><strong>Cuenta operaciones dominantes:</strong> céntrate en las que crecen con <code>n</code>.</li>
+<li><strong>Analiza los bucles:</strong> recorridos consecutivos suelen sumar; los anidados pueden multiplicar.</li>
+<li><strong>Considera llamadas recursivas:</strong> expresa cómo se divide el problema y cuántas veces se resuelve.</li>
+<li><strong>Separa tiempo y espacio:</strong> incluye la memoria adicional y las estructuras creadas.</li>
+<li><strong>Aclara el caso analizado:</strong> mejor caso, caso promedio o peor caso pueden diferir.</li>
+<li><strong>Mide cuando importe:</strong> valida las hipótesis con datos representativos y pruebas de rendimiento.</li>
 </ol>
-<h2 id="por-qué-es-importante-la-notación-big-o">¿Por qué es Importante la Notación Big O?</h2>
-<p>La notación Big O es esencial por varias razones:</p>
-<ul>
-<li><strong>Comparación de Algoritmos</strong>: Permite comparar la eficiencia de diferentes algoritmos, ayudando a seleccionar el más adecuado para una tarea específica.</li>
-<li><strong>Escalabilidad</strong>: Ayuda a prever cómo un algoritmo se comportará a medida que aumenta la carga de trabajo, lo que es crucial en aplicaciones a gran escala.</li>
-<li><strong>Optimización</strong>: Proporciona un marco para identificar cuellos de botella en el rendimiento, lo que permite optimizar el código y mejorar la experiencia del usuario.</li>
-</ul>
-<h2 id="conclusión">Conclusión</h2>
-<p>La notación Big O es una herramienta poderosa en la caja de herramientas de cualquier desarrollador o científico de la computación. Comprender su uso y su aplicación en la evaluación de algoritmos es esencial para diseñar software eficiente y escalable. A medida que la complejidad de las aplicaciones aumenta, la capacidad de evaluar y optimizar algoritmos se convierte en una habilidad invaluable.</p>
-<p>Para obtener más información sobre algoritmos y su complejidad, no dudes en consultar recursos adicionales y profundizar en este fascinante tema.</p>  </article> </main>  </main> </div> <footer class="footer footer-center block mb-5 pt-10"> <div class="pb-2">
+<h3 id="big-o-omega-y-theta-diferencias-básicas">Big O, Omega y Theta: diferencias básicas</h3>
+<p>Big O describe una cota superior asintótica; <strong>Omega (Ω)</strong> describe una cota inferior y <strong>Theta (Θ)</strong> una cota ajustada, cuando el crecimiento queda acotado por arriba y por abajo por la misma función. No son sinónimos de peor, mejor y caso promedio: esos casos describen qué entradas se analizan, mientras que O, Ω y Θ describen cotas del crecimiento.</p>
+<h2 id="conclusión-usa-big-o-para-evaluar-escalabilidad">Conclusión: usa Big O para evaluar escalabilidad</h2>
+<p>La notación Big O es una herramienta para razonar sobre el crecimiento del tiempo y la memoria, no un cronómetro ni una predicción exacta. Identifica el tamaño de la entrada, analiza las operaciones dominantes, aclara el caso que estás midiendo y valida el rendimiento con pruebas cuando sea relevante. Así podrás comparar algoritmos y elegir una solución adecuada para tus datos y restricciones.</p>  </article> </main>  </main> </div> <footer class="footer footer-center block mb-5 pt-10"> <div class="pb-2">
 &copy; 2026 Gabriel Houltman
 </div> </footer>  </div> <div class="drawer-side z-40"> <label for="my-drawer" class="drawer-overlay"></label> <aside class="px-2 pt-2 h-auto min-h-full w-[19rem] bg-base-200 text-base-content flex flex-col"> <div class="w-fit mx-auto mt-5 mb-6"> <a href="/portfolio/"> <div class="avatar transition ease-in-out hover:scale-[102%] block m-auto"> <div class="w-[8.5rem]"> <img src="/portfolio/images/profile.jpg" class="mask mask-circle" alt="Profile image" width="300" height="300" loading="lazy" decoding="async"> </div> </div> </a> </div> <ul class="menu grow shrink menu-md overflow-y-auto"> <li><a class="py-3 text-base" id="home" href="/portfolio/">Home</a></li> <li><a class="py-3 text-base" id="projects" href="/portfolio/projects">Projects</a></li> <!-- <li><a class="py-3 text-base" id="services" href="/portfolio/services">Services</a></li>
     <li><a class="py-3 text-base" id="store" href="/portfolio/store">Store</a></li>--> <li><a class="py-3 text-base" id="blog" href="/portfolio/blog/">Blog</a></li> <li><a class="py-3 text-base" id="cv" href="/portfolio/cv">CV</a></li> <li> <a class="py-3 text-base" href="mailto:houltman@gmail.com" target="_blank" referrerpolicy="no-referrer-when-downgrade">Contact</a> </li> </ul> <script>(function(){const sideBarActiveItemID = undefined;
